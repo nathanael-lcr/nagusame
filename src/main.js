@@ -4,6 +4,7 @@ import createPlayer from "./player.js";
 import { createWalls } from "./walls.js";
 import { createKey, createDoor } from "./interact.js"; // On importe createDoor
 import createEnemy from "./enemy.js";
+import createUI from "./UI.js";
 
 const k = kaplay();
 
@@ -13,6 +14,8 @@ k.scene("game", () => {
     const player = createPlayer(k, 120, 80);
     const enemy = createEnemy(k, 200, 400);
     const key = createKey(k, 0, 0);
+    const uiSquares = createUI(k, player);
+    const enemy = createEnemy(k, uiSquares, 200, 400);
     // On ajoute la porte à une position spécifique
     const door = createDoor(k, 180, 180); 
     createKey(k, 0, 0);
