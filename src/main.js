@@ -8,3 +8,4 @@ k.loadRoot("./");
 import createPlayer from "./player.js";
 
 const player = createPlayer(k, 120, 80);
+
