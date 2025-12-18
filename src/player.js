@@ -1,13 +1,20 @@
+// player.js
+
 export default function createPlayer(k, x = 120, y = 80) {
     const SPEED = 200;
     let isTouchingKey = false;
-    let hasKey = false;
+    // La variable hasKey est supprimée d'ici, on va l'attacher à l'objet player
+
     const player = k.add([
         k.rect(40, 60),
         k.pos(x, y),
         k.color(255, 0, 0),
-        area(),
+        k.area(),
         "player",
+        {
+            // On ajoute hasKey comme une propriété de l'objet joueur
+            hasKey: false, 
+        },
     ]);
 
     const baseSpeed = 200;
@@ -28,26 +35,32 @@ export default function createPlayer(k, x = 120, y = 80) {
         });
     });
 
+    k.onKeyDown("d", () => player.move(mvmt, 0));
     k.onKeyDown("right", () => player.move(mvmt, 0));
+    k.onKeyDown("q", () => player.move(-mvmt, 0));
     k.onKeyDown("left", () => player.move(-mvmt, 0));
+    k.onKeyDown("z", () => player.move(0, -mvmt));
     k.onKeyDown("up", () => player.move(0, -mvmt));
+    k.onKeyDown("s", () => player.move(0, mvmt));
     k.onKeyDown("down", () => player.move(0, mvmt));
 
-
-    onCollide("player", "key", ()=>{
+    // Correction : on ajoute le préfixe k.
+    k.onCollide("player", "key", ()=>{
         isTouchingKey = true;
     });
 
-    
-    onCollideEnd("player", "key", ()=>{
+    k.onCollideEnd("player", "key", ()=>{
         isTouchingKey = false;
     });
 
     function takeKey(){
-        const keysObjects = get("key");
+        // Correction : on ajoute le préfixe k.
+        const keysObjects = k.get("key");
         if(keysObjects[0]){
-            destroy(keysObjects[0]);
-            hasKey = true;
+            k.destroy(keysObjects[0]);
+            // On modifie la propriété de l'objet joueur
+            player.hasKey = true; 
+            console.log("Clé obtenue !");
         }
     }
    
