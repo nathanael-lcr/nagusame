@@ -6,7 +6,8 @@ export default function createPlayer(k, x = 120, y = 80) {
         k.rect(40, 60),
         k.pos(x, y),
         k.color(255, 0, 0),
-        area(),
+        k.area(),
+        k.body(),
         "player",
     ]);
   
