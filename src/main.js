@@ -1,15 +1,20 @@
+// main.js
 import kaplay from "kaplay";
 import createPlayer from "./player.js";
-import { createKey } from "./interact.js";
 import { createWalls } from "./walls.js";
+import { createKey, createDoor } from "./interact.js"; // On importe createDoor
+import createEnemy from "./enemy.js";
 
 const k = kaplay();
 
 k.loadRoot("./");
 
-
 k.scene("game", () => {
     const player = createPlayer(k, 120, 80);
+    const enemy = createEnemy(k, 200, 400);
+    const key = createKey(k, 0, 0);
+    // On ajoute la porte à une position spécifique
+    const door = createDoor(k, 180, 180); 
     createKey(k, 0, 0);
     createWalls(k, -700, 250);
 
@@ -20,3 +25,4 @@ k.scene("game", () => {
 
 
 k.go("game");
+
