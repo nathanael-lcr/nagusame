@@ -6,6 +6,7 @@ export default function createPlayer(k, x = 120, y = 80) {
         k.rect(40, 60),
         k.pos(x, y),
         k.color(255, 0, 0),
+        k.anchor("center"),
         area(),
         "player",
     ]);
@@ -14,6 +15,17 @@ export default function createPlayer(k, x = 120, y = 80) {
     const lerpFactor = 0.2;
     let mvmt = baseSpeed;
     let isSprinting = false;
+
+    player.health = 30;
+
+    player.takeDamage = function(amount) {
+        this.health -= amount;
+        console.log(`Player damaged! Health: ${this.health}`);
+        if (this.health <= 0) {
+            console.log("Player is dead!");
+            // Ici tu peux faire game over ou respawn
+        }
+    };
 
     k.onKeyDown("shift", () => {
         isSprinting = true;

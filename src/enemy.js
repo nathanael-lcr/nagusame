@@ -1,4 +1,9 @@
-export default function createEnemy(k, centerX = 400, centerY = 300) {
+export default function createEnemy(
+  k,
+  uiSquares,
+  centerX = 400,
+  centerY = 300
+) {
   const enemy = k.add([
     k.rect(40, 60),
     k.pos(centerX, centerY),
@@ -10,8 +15,15 @@ export default function createEnemy(k, centerX = 400, centerY = 300) {
 
   const minStep = 100;
   const maxStep = 200;
-  const speed = 150;
+  const speed = 100;
   const waitTime = 1.5;
+  const attackDistance = 20;
+  const attackCooldown = 1.5; // secondes entre chaque attaque
+  let currentSpeed = speed; // vitesse actuelle de l'ennemi
+  let canAttack = true;
+  let attackSlowTime = 0.5; // durée pendant laquelle l'ennemi est ralenti
+  let slowTimer = 0;
+
   let center = k.vec2(centerX, centerY);
   let target = enemy.pos.clone();
   let isWaiting = false;
@@ -53,11 +65,42 @@ export default function createEnemy(k, centerX = 400, centerY = 300) {
     const player = k.get("player")[0];
     if (!player) return;
     const distanceToPlayer = enemy.pos.dist(player.pos);
-    if (distanceToPlayer <= 20) {
-      if (isChasing) {
-        console.log("Enemy caught the player!");
-        // Vous pouvez ajouter ici ce qui se passe lorsque l'ennemi attrape le joueur
+    // Gestion du cooldown et du ralentissement
+    // Gestion du cooldown et du ralentissement
+
+    if (!canAttack) {
+      slowTimer += k.dt();
+      currentSpeed = speed / 4; // Ralentir l'ennemi pendant le slow
+      if (slowTimer >= attackCooldown) {
+        canAttack = true;
+        slowTimer = 0;
+        currentSpeed = speed; // Retour à la vitesse normale
       }
+    } else {
+      currentSpeed = speed; // vitesse normale si pas en cooldown
+    }
+
+    // Attaque si le joueur est proche
+    if (distanceToPlayer <= attackDistance && isChasing && canAttack) {
+      console.log("Enemy caught the player!");
+      player.takeDamage(10);
+      // --- Mise à jour des carrés ---
+      if (uiSquares.length > 0) {
+        for (let i = uiSquares.length - 1; i >= 0; i--) {
+          if (!uiSquares[i].hidden) {
+            uiSquares[i].hidden = true;
+            break; // on cache un seul carré par attaque
+          }
+        }
+      }
+      canAttack = false; // lance le cooldown
+      slowTimer = 0;
+      currentSpeed = speed / 4; // ralentir l'ennemi après attaque
+    }
+
+    // Déplacement vers le target
+    if (dir.len() > 0) {
+      enemy.move(dir.unit().scale(currentSpeed));
     }
 
     //console.log("Pos enemy:", enemy.pos, "Target:", target, "Dist:", dist.toFixed(2), "Investigation:", isInvestigating);
@@ -230,7 +273,7 @@ export default function createEnemy(k, centerX = 400, centerY = 300) {
       if (player) {
         // Si joueur à moins de la moitié de la portée → poursuite immédiate
         if (distance < visionLength / 2) {
-          console.log("Joueur très proche! Poursuite immédiate");
+          //console.log("Joueur très proche! Poursuite immédiate");
           isChasing = true;
           isInvestigating = false;
           isWaitingAtInvestigation = false;
