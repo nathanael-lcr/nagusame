@@ -9,8 +9,6 @@ export default function createPlayer(k, x = 120, y = 80) {
         area(),
         "player",
     ]);
-    const baseSpeed = 200;
-    let mvmt = baseSpeed;
 
     const baseSpeed = 200;
     const lerpFactor = 0.2;
