@@ -12,16 +12,29 @@ export default function createPlayer(k, x = 120, y = 80) {
     const baseSpeed = 200;
     let mvmt = baseSpeed;
 
-    k.onKeyDown("shift", () => mvmt = baseSpeed*2)
-    k.onKeyRelease("shift", () => mvmt =baseSpeed);
-    k.onKeyDown("d", () => player.move(mvmt, 0));
+    const baseSpeed = 200;
+    const lerpFactor = 0.2;
+    let mvmt = baseSpeed;
+    let isSprinting = false;
+
+    k.onKeyDown("shift", () => {
+        isSprinting = true;
+        mvmt = baseSpeed * 2;
+    });
+    k.onKeyRelease("shift", () => {
+        isSprinting = false;
+        k.onUpdate(() => {
+            if (!isSprinting) {
+                mvmt = k.lerp(mvmt, baseSpeed, lerpFactor);
+            }
+        });
+    });
+
     k.onKeyDown("right", () => player.move(mvmt, 0));
-    k.onKeyDown("q", () => player.move(-mvmt, 0));
     k.onKeyDown("left", () => player.move(-mvmt, 0));
-    k.onKeyDown("z", () => player.move(0, -mvmt));
     k.onKeyDown("up", () => player.move(0, -mvmt));
-    k.onKeyDown("s", () => player.move(0, mvmt));
     k.onKeyDown("down", () => player.move(0, mvmt));
+
 
     onCollide("player", "key", ()=>{
         isTouchingKey = true;
