@@ -10,12 +10,14 @@ export default function createPlayer(k, x = 120, y = 80) {
         k.pos(x, y),
         k.color(255, 0, 0),
         k.area(),
+        k.body(),
         "player",
         {
             // On ajoute hasKey comme une propriété de l'objet joueur
             hasKey: false, 
         },
     ]);
+  
 
     const baseSpeed = 200;
     const lerpFactor = 0.2;
