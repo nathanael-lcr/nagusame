@@ -12,7 +12,6 @@ k.loadRoot("./");
 
 k.scene("game", () => {
     const player = createPlayer(k, 120, 80);
-    const enemy = createEnemy(k, 200, 400);
     const key = createKey(k, 0, 0);
     const uiSquares = createUI(k, player);
     const enemy = createEnemy(k, uiSquares, 200, 400);
