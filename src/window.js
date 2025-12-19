@@ -1,6 +1,6 @@
-export default function createWindows(k, x, y) {
+export default function createWindows(k, x, y,sizeX,sizeY,angle = 0) {
     const window = k.add([
-        k.rect(10, 120),
+        k.rect(sizeX, sizeY),
         k.pos(x, y),
         k.anchor("center"),
         k.area(),
@@ -11,7 +11,7 @@ export default function createWindows(k, x, y) {
 
     const visionLength = 300;
     const visionAngle = Math.PI / 2;
-    const currentAngle = 0;
+    const currentAngle = angle;
 
     const windowWidth = 10;
     let currentVisionAngle = 0;
