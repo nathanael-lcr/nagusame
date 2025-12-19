@@ -64,9 +64,9 @@ function createPulsatingText(k, textContent, size, yOffset = 0, color = k.color(
 // Crée un layer pour l'UI
 k.setLayers(
   [
-    "enemy",
     "wall",
-    "game", // tout ce qui est jeu normal   
+    "game", // tout ce qui est jeu normal  
+    "enemy",
     "player", // joueur et entités mobiles
     "ui", // UI
   ],
@@ -132,7 +132,7 @@ k.loadShader(
             return def_frag(); // ne pas appliquer le shader
         }
 
-        if (uv.x < 0.1 && uv.y > 0.9) { // zone UI
+        if (uv.x < 0.15 && uv.y > 0.9) { // zone UI
             return def_frag(); // ne pas appliquer le shader
         }
 
@@ -171,7 +171,7 @@ k.scene("level1", () => {
     const key = createKey(k, 0, 0);
     const lighting = createLighting(k, player);
     const uiSquares = createUI(k, player);
-    const enemy = createEnemy(k, uiSquares, 700, -500);
+    const enemy = createEnemy(k, uiSquares, 100, 40);
     const door = createDoor(k, 180, 180);
     createWall(k, -700, 250, 1800, 300); //mur bas
     createWall(k, -700, -1200, 350, 1500);//mur gauche

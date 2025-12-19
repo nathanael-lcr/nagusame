@@ -4,13 +4,20 @@ export default function createEnemy(
   centerX = 400,
   centerY = 300
 ) {
+  k.loadSprite("enemy", "public/enemy.png", {
+    sliceX: 3,
+    sliceY: 2,
+    anims: {
+      run: { from: 0, to: 2, speed: 3, loop: true },
+      idle: { from: 3, to: 5, speed: 2, loop: true }
+    },
+  });
   const enemy = k.add([
-    k.rect(40, 60),
+    k.sprite("enemy"),
     k.pos(centerX, centerY),
     k.anchor("center"),
     k.area(),
     // k.body(),
-    k.color(255, 0, 0),
     k.layer("enemy"),
     "enemy",
   ]);
@@ -182,7 +189,7 @@ export default function createEnemy(
     k.circle(maxStep),
     k.pos(center),
     k.outline(2),
-    k.opacity(0.25),
+    k.opacity(0),
     k.color(0, 255, 0),
     "debug",
   ]);
@@ -203,7 +210,7 @@ export default function createEnemy(
 
   investigationPoint.onUpdate(() => {
     if (isInvestigating || isChasing) {
-      investigationPoint.opacity = 0.8;
+      investigationPoint.opacity = 0.0;
       if (lastSeenPlayerPos) {
         investigationPoint.pos = lastSeenPlayerPos;
       }

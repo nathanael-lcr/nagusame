@@ -1,14 +1,14 @@
 export default function createPlayer(k, x = 120, y = 80) {
   let isTouchingKey = false;
-  // 3 frames, chaque frame 32x32
+  
   k.loadSprite("player", "public/tobby-sprite.png", {
-    sliceX: 4, // nombre de frames par animation
-    sliceY: 4, // nombre de directions : bottom, left, right, top (ou selon ton sheet)
+    sliceX: 4,
+    sliceY: 4,
     anims: {
-      run_top: { from: 0, to: 3, speed: 6, loop: true }, // Row 0
-      run_bottom: { from: 4, to: 7, speed: 6, loop: true }, // Row 1
-      run_side: { from: 8, to: 11, speed: 6, loop: true }, // Row 2
-      idle: { from: 12, to: 15, speed: 2, loop: true }, // Row 3
+      run_top: { from: 0, to: 3, speed: 6, loop: true },
+      run_bottom: { from: 4, to: 7, speed: 6, loop: true },
+      run_side: { from: 8, to: 11, speed: 6, loop: true },
+      idle: { from: 12, to: 15, speed: 2, loop: true },
     },
   });
 
@@ -16,7 +16,7 @@ export default function createPlayer(k, x = 120, y = 80) {
     k.sprite("player"),
     k.pos(x, y),
     k.anchor("center"),
-    k.area({ collisionIgnore: ["enemy"] }), // ignore these tags
+    k.area({ collisionIgnore: ["enemy"] }),
     k.body(),
     k.layer("player"),
     k.z(10),
@@ -27,8 +27,7 @@ export default function createPlayer(k, x = 120, y = 80) {
   ]);
 
   let moving = false;
-  let lastDir = "bottom"; // "top" | "bottom" | "side"
-
+  let lastDir = "bottom";
   player.play("idle");
 
   const baseSpeed = 150;
@@ -37,6 +36,11 @@ export default function createPlayer(k, x = 120, y = 80) {
   let isSprinting = false;
 
   player.health = 30;
+  player.maxStamina = 100;
+  player.stamina = 100;
+
+  const STAMINA_DRAIN = 30;
+  const STAMINA_REGEN = 20;
 
   player.takeDamage = function (amount) {
     this.health -= amount;
@@ -47,48 +51,57 @@ export default function createPlayer(k, x = 120, y = 80) {
     }
   };
 
-  //STAMINA 
-    player.maxStamina = 100;
-    player.stamina = 100;
+  // ✅ UN SEUL onUpdate pour tout gérer
+  k.onUpdate(() => {
+    // Gestion du sprint et stamina
+    if (isSprinting && player.stamina > 0) {
+      player.stamina -= STAMINA_DRAIN * k.dt();
+      mvmt = baseSpeed * 1.8;
 
-    const STAMINA_DRAIN = 30;
-    const STAMINA_REGEN = 20;
+      if (player.stamina <= 0) {
+        player.stamina = 0;
+        isSprinting = false;
+        mvmt = baseSpeed;
+      }
+    }
 
-    // sprint
-    k.onKeyDown("shift", () => {
-        if (player.stamina > 0) {
-            isSprinting = true;
-            mvmt = baseSpeed * 1.8;
-        }
-    });
+    // Régénération de la stamina
+    if (!isSprinting && player.stamina < player.maxStamina) {
+      player.stamina += STAMINA_REGEN * k.dt();
+      if (player.stamina > player.maxStamina) {
+        player.stamina = player.maxStamina;
+      }
+    }
+
+    // Lerp du mouvement quand on ne sprinte pas
+    if (!isSprinting && mvmt > baseSpeed) {
+      mvmt = k.lerp(mvmt, baseSpeed, lerpFactor);
+    }
+
+    // Gestion de l'idle
+    if (
+      !k.isKeyDown("d") &&
+      !k.isKeyDown("right") &&
+      !k.isKeyDown("q") &&
+      !k.isKeyDown("left") &&
+      !k.isKeyDown("z") &&
+      !k.isKeyDown("up") &&
+      !k.isKeyDown("s") &&
+      !k.isKeyDown("down")
+    ) {
+      stopRun();
+    }
+  });
+
+  // Sprint
+  k.onKeyDown("shift", () => {
+    if (player.stamina > 0) {
+      isSprinting = true;
+    }
+  });
 
   k.onKeyRelease("shift", () => {
     isSprinting = false;
-    k.onUpdate(() => {
-      if (!isSprinting) {
-        mvmt = k.lerp(mvmt, baseSpeed, lerpFactor);
-      }
-      
-      // STAMINA UPDATE
-    k.onUpdate(() => {
-        if (isSprinting && player.stamina > 0) {
-            player.stamina -= STAMINA_DRAIN * k.dt();
-
-            if (player.stamina <= 0) {
-                player.stamina = 0;
-                isSprinting = false;
-                mvmt = baseSpeed;
-            }
-        }
-
-        if (!isSprinting && player.stamina < player.maxStamina) {
-            player.stamina += STAMINA_REGEN * k.dt();
-            if (player.stamina > player.maxStamina) {
-                player.stamina = player.maxStamina;
-            }
-        }
-    });
-    });
   });
 
   function playRun(dir, flip = false) {
@@ -107,6 +120,7 @@ export default function createPlayer(k, x = 120, y = 80) {
     }
   }
 
+  // Mouvements
   k.onKeyDown("d", () => {
     player.move(mvmt, 0);
     playRun("side", false);
@@ -147,27 +161,13 @@ export default function createPlayer(k, x = 120, y = 80) {
     playRun("bottom");
   });
 
+  // Collision clé
   k.onCollide("player", "key", () => {
     isTouchingKey = true;
   });
 
   k.onCollideEnd("player", "key", () => {
     isTouchingKey = false;
-  });
-
-  k.onUpdate(() => {
-    if (
-      !k.isKeyDown("d") &&
-      !k.isKeyDown("right") &&
-      !k.isKeyDown("q") &&
-      !k.isKeyDown("left") &&
-      !k.isKeyDown("z") &&
-      !k.isKeyDown("up") &&
-      !k.isKeyDown("s") &&
-      !k.isKeyDown("down")
-    ) {
-      stopRun();
-    }
   });
 
   function takeKey() {
