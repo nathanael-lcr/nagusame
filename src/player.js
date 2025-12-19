@@ -1,9 +1,7 @@
-// player.js
-
 export default function createPlayer(k, x = 120, y = 80) {
 
     let isTouchingKey = false;
-    // La variable hasKey est supprimée d'ici, on va l'attacher à l'objet player
+    let currentKey = null;
 
     const player = k.add([
         k.rect(40, 60),
@@ -14,20 +12,13 @@ export default function createPlayer(k, x = 120, y = 80) {
         k.body(),
         "player",
         {
-            // On ajoute hasKey comme une propriété de l'objet joueur
-            hasKey: false, 
+            hasKey: false,
         },
     ]);
-  
-
-    const baseSpeed = 200;
-    const lerpFactor = 0.2;
-    let mvmt = baseSpeed;
-    let isSprinting = false;
 
     player.health = 30;
 
-    player.takeDamage = function(amount) {
+    player.takeDamage = function (amount) {
         this.health -= amount;
         console.log(`Player damaged! Health: ${this.health}`);
         if (this.health <= 0) {
@@ -38,17 +29,28 @@ export default function createPlayer(k, x = 120, y = 80) {
         }
     };
 
+    const baseSpeed = 200;
+    let mvmt = baseSpeed;
+    let isSprinting = false;
+
+    //STAMINA 
+    player.maxStamina = 100;
+    player.stamina = 100;
+
+    const STAMINA_DRAIN = 30;
+    const STAMINA_REGEN = 20;
+
+    // sprint
     k.onKeyDown("shift", () => {
-        isSprinting = true;
-        mvmt = baseSpeed * 2;
+        if (player.stamina > 0) {
+            isSprinting = true;
+            mvmt = baseSpeed * 2;
+        }
     });
+
     k.onKeyRelease("shift", () => {
         isSprinting = false;
-        k.onUpdate(() => {
-            if (!isSprinting) {
-                mvmt = k.lerp(mvmt, baseSpeed, lerpFactor);
-            }
-        });
+        mvmt = baseSpeed;
     });
 
     k.onKeyDown("d", () => player.move(mvmt, 0));
@@ -60,36 +62,50 @@ export default function createPlayer(k, x = 120, y = 80) {
     k.onKeyDown("s", () => player.move(0, mvmt));
     k.onKeyDown("down", () => player.move(0, mvmt));
 
-    // Correction : on ajoute le préfixe k.
-    k.onCollide("player", "key", ()=>{
+    // STAMINA UPDATE
+    k.onUpdate(() => {
+        if (isSprinting && player.stamina > 0) {
+            player.stamina -= STAMINA_DRAIN * k.dt();
+
+            if (player.stamina <= 0) {
+                player.stamina = 0;
+                isSprinting = false;
+                mvmt = baseSpeed;
+            }
+        }
+
+        if (!isSprinting && player.stamina < player.maxStamina) {
+            player.stamina += STAMINA_REGEN * k.dt();
+            if (player.stamina > player.maxStamina) {
+                player.stamina = player.maxStamina;
+            }
+        }
+    });
+
+    k.onCollide("player", "key", (player, key) => {
         isTouchingKey = true;
+        currentKey = key;
     });
 
-    k.onCollideEnd("player", "key", ()=>{
+    k.onCollideEnd("player", "key", () => {
         isTouchingKey = false;
+        currentKey = null;
     });
 
-    function takeKey(){
-        // Correction : on ajoute le préfixe k.
-        const keysObjects = k.get("key");
-        if(keysObjects[0]){
-            k.destroy(keysObjects[0]);
-            // On modifie la propriété de l'objet joueur
-            player.hasKey = true; 
+    function takeKey() {
+        if (currentKey && !player.hasKey) {
+            k.destroy(currentKey);
+            player.hasKey = true;
             console.log("Clé obtenue !");
         }
     }
-   
+
     k.onKeyPress("e", () => {
-        if(isTouchingKey){
-            takeKey()
-        }
+        if (isTouchingKey) takeKey();
     });
 
     k.onKeyPress("space", () => {
-        if(isTouchingKey){
-            takeKey();
-        }
+        if (isTouchingKey) takeKey();
     });
 
     return player;
