@@ -36,12 +36,11 @@ export function createDoor(k, x, y) {
     console.log("Porte ouverte !");
   }
 
-  //détecte la collision entre le joueur et la porte
-  k.onCollide("player", "door", (player, door) => {
-    if (player.hasKey) {
-      openDoor(door);
-    } else {
-      console.log("Cette porte est verrouillée. Il vous faut une clé.");
-    }
-  });
+    k.onCollide("player", "door", (player, door) => {
+        if (player.hasKey) {
+            openDoor(door);
+        } else {
+            console.log("Cette porte est verrouillée. Il vous faut une clé.");
+        }
+    });
 }

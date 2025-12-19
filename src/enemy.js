@@ -9,7 +9,7 @@ export default function createEnemy(
     k.pos(centerX, centerY),
     k.anchor("center"),
     k.area(),
-    k.body(),
+    // k.body(),
     k.color(255, 0, 0),
     k.layer("enemy"),
     "enemy",

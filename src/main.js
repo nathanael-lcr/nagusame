@@ -1,4 +1,3 @@
-// main.js
 import kaplay from "kaplay";
 import createPlayer from "./player.js";
 import { createWall } from "./walls.js";
@@ -10,9 +9,58 @@ import createUI from "./UI.js";
 import createWindow from "./window.js";
 
 const k = kaplay();
-
+const RUBIK_BURNED = "'Rubik Burned', cursive";
 k.loadRoot("./");
 
+// Fonction pour charger spécifiquement la police
+function loadRubikBurned() {
+    return new Promise((resolve) => {
+        // Créer un élément texte invisible pour forcer le chargement
+        const testElement = document.createElement('span');
+        testElement.style.fontFamily = 'Rubik Burned';
+        testElement.style.position = 'absolute';
+        testElement.style.opacity = '0';
+        testElement.textContent = '.';
+        document.body.appendChild(testElement);
+
+        // Vérifier avec l'API FontFace
+        if (document.fonts) {
+            document.fonts.load('16px "Rubik Burned"').then(() => {
+                testElement.remove();
+                resolve();
+            }).catch(() => {
+                setTimeout(() => {
+                    testElement.remove();
+                    resolve();
+                }, 1000);
+            });
+        }
+    });
+}
+
+function createPulsatingText(k, textContent, size, yOffset = 0, color = k.color(255, 255, 255)) {
+    const textObj = k.add([
+        k.text(textContent, {
+            size: size,
+            font: RUBIK_BURNED
+        }),
+        color,
+        k.pos(k.center().x, k.center().y + yOffset),
+        k.anchor("center"),
+        k.opacity(1),
+        k.scale(1)
+    ]);
+
+    textObj.onUpdate(() => {
+        const t = k.time();
+        textObj.opacity = k.wave(0.6, 1, t * 2);
+        textObj.scale = k.vec2(k.wave(0.98, 1.02, t * 3));
+    });
+
+    return textObj;
+}
+
+// ÉLÉMENTS AJOUTÉS DU PREMIER CODE :
 // Crée un layer pour l'UI
 k.setLayers(
   [
@@ -117,24 +165,85 @@ k.loadShader(
 );
 
 k.scene("level1", () => {
-
-  createMap(k, map);
-  createKey(k, 0, 0);
-  const player = createPlayer(k, 120, 80);
-  const key = createKey(k, 0, 0);
-  const lighting = createLighting(k, player);
-  const uiSquares = createUI(k, player);
-  const enemy = createEnemy(k, uiSquares, 0, -500);
-  const enemy2 = createEnemy(k, uiSquares, 300, -500);
-  const door = createDoor(k, 180, 180);
-
-  createWall(k, -700, 250, 1800, 200);
-  createWall(k, -700, -500, 200, 800);
-  createWindow(k, -500, -250);
-  setCamScale(4);
-  k.onUpdate(() => {
-    k.setCamPos(player.pos);
-  });
+    k.setBackground(50, 50, 50);
+    createMap(k, map);
+    const player = createPlayer(k, 120, 80);
+    const key = createKey(k, 0, 0);
+    const lighting = createLighting(k, player);
+    const uiSquares = createUI(k, player);
+    const enemy = createEnemy(k, uiSquares, 700, -500);
+    const door = createDoor(k, 180, 180);
+    createWall(k, -700, 250, 1800, 300); //mur bas
+    createWall(k, -700, -1200, 350, 1500);//mur gauche
+    createWall(k, 600, -1700, 300, 1500); //mur droit
+    createWindow(k, -350, -600, 10, 120, 0);//fenetre gauche
+    createWindow(k, 600, -400, 10, 120, Math.PI);//fenetre droite bas
+    createWindow(k, 600, -1000, 10, 120, Math.PI);//fenetre droite haut
+    createWindow(k, 800, 250, 120, 10, -Math.PI / 2); //fenetre bas
+    setCamScale(4);
+    k.onUpdate(() => {
+        k.setCamPos(player.pos);
+    });
 });
 
-k.go("level1");
+k.scene("death", () => {
+    k.setBackground(0, 0, 0);
+    k.add([
+        k.text("You got caught", {
+            size: 64,
+            font: RUBIK_BURNED
+        }),
+        k.color(255, 50, 50),
+        k.pos(k.center()),
+        k.anchor("center")
+    ]);
+    createPulsatingText(
+        k, 
+        "Press SPACE to restart",
+        32, 
+        100, 
+        k.color(255, 255, 255)
+    );
+
+    k.onKeyPress("space", () => {
+        k.go("level1");
+    });
+});
+
+k.scene("menu", () => {
+    k.setBackground(0, 0, 0);
+    k.add([
+        k.text("慰め", {
+            size: 64,
+            font: RUBIK_BURNED
+        }),
+        k.color(255, 50, 50),
+        k.pos(k.center().x, k.center().y - 150),
+        k.anchor("center")
+    ]);
+    k.add([
+        k.text("Nagusame", {
+            size: 54,
+            font: "Michroma"
+        }),
+        k.color(255, 50, 50),
+        k.pos(k.center().x, k.center().y - 100),
+        k.anchor("center")
+    ]);
+    
+    createPulsatingText(
+        k, 
+        "Press SPACE to start", 
+        32, 
+        100, 
+        k.color(255, 255, 255)
+    );
+
+    k.onKeyPress("space", () => {
+        k.go("level1");
+    });
+});
+
+loadRubikBurned().then(() => {
+    k.go("menu");
+});

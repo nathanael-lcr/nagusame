@@ -1,5 +1,3 @@
-// player.js
-
 export default function createPlayer(k, x = 120, y = 80) {
   let isTouchingKey = false;
   // 3 frames, chaque frame 32x32
@@ -45,20 +43,51 @@ export default function createPlayer(k, x = 120, y = 80) {
     console.log(`Player damaged! Health: ${this.health}`);
     if (this.health <= 0) {
       console.log("Player is dead!");
-      // Ici tu peux faire game over ou respawn
+      k.go("death");
     }
   };
 
-  k.onKeyDown("shift", () => {
-    isSprinting = true;
-    mvmt = baseSpeed * 1.8;
-  });
+  //STAMINA 
+    player.maxStamina = 100;
+    player.stamina = 100;
+
+    const STAMINA_DRAIN = 30;
+    const STAMINA_REGEN = 20;
+
+    // sprint
+    k.onKeyDown("shift", () => {
+        if (player.stamina > 0) {
+            isSprinting = true;
+            mvmt = baseSpeed * 1.8;
+        }
+    });
+
   k.onKeyRelease("shift", () => {
     isSprinting = false;
     k.onUpdate(() => {
       if (!isSprinting) {
         mvmt = k.lerp(mvmt, baseSpeed, lerpFactor);
       }
+      
+      // STAMINA UPDATE
+    k.onUpdate(() => {
+        if (isSprinting && player.stamina > 0) {
+            player.stamina -= STAMINA_DRAIN * k.dt();
+
+            if (player.stamina <= 0) {
+                player.stamina = 0;
+                isSprinting = false;
+                mvmt = baseSpeed;
+            }
+        }
+
+        if (!isSprinting && player.stamina < player.maxStamina) {
+            player.stamina += STAMINA_REGEN * k.dt();
+            if (player.stamina > player.maxStamina) {
+                player.stamina = player.maxStamina;
+            }
+        }
+    });
     });
   });
 
