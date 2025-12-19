@@ -40,7 +40,7 @@ export default function createPlayer(k, x = 120, y = 80) {
 
     k.onKeyDown("shift", () => {
         isSprinting = true;
-        mvmt = baseSpeed * 2;
+        mvmt = baseSpeed * 1.8;
     });
     k.onKeyRelease("shift", () => {
         isSprinting = false;
