@@ -32,6 +32,7 @@ export default function createPlayer(k, x = 120, y = 80) {
         console.log(`Player damaged! Health: ${this.health}`);
         if (this.health <= 0) {
             console.log("Player is dead!");
+            k.go("death");
             // Ici tu peux faire game over ou respawn
 
         }
