@@ -20,11 +20,34 @@ export default function createUI(k, player) {
         squares.push(square);
     }
 
-    function updateHealthUI() {
-        const healthPerSquare = 30 / maxSquares;
-        for (let i = 0; i < squares.length; i++) {
-            squares[i].hidden = player.health <= i * healthPerSquare;
-        }
+  function updateHealthUI() {
+      const healthPerSquare = 30 / maxSquares;
+      for (let i = 0; i < squares.length; i++) {
+          squares[i].hidden = player.health <= i * healthPerSquare;
+      }
+    
+  for (let i = 0; i < 3; i++) {
+    const square = k.add([
+      k.rect(squareSize, squareSize),
+      k.pos(startX + i * (squareSize + padding), startY),
+      k.color(255, 0, 0),
+      k.fixed(),
+      k.layer("ui"),
+    ]);
+
+    squares.push(square);
+  }
+
+  // Mettre à jour les carrés selon la vie du joueur
+  function updateUI() {
+    const maxHealth = 3; // nombre total de carrés
+    const healthPerSquare = 30 / maxHealth; // correspondance santé / carré
+    for (let i = 0; i < squares.length; i++) {
+      if (player.health <= i * healthPerSquare) {
+        squares[i].hidden = true; // cacher le carré si perdu
+      } else {
+        squares[i].hidden = false;
+      }
     }
 
     const staminaBarBg = k.add([

@@ -1,7 +1,7 @@
-export function createWalls(k, x, y) {
+export function createWall(k, x, y,sizex,sizey) {
     
     const keyInstance = k.add([
-        k.rect(1800, 100),
+        k.rect(sizex, sizey),
         k.pos(x, y),
         k.color(0, 0, 0),
         k.area(),

@@ -1,4 +1,5 @@
 export default function createPlayer(k, x = 120, y = 80) {
+
     let isTouchingKey = false;
     let currentKey = null;
 
@@ -22,6 +23,8 @@ export default function createPlayer(k, x = 120, y = 80) {
         console.log(`Player damaged! Health: ${this.health}`);
         if (this.health <= 0) {
             console.log("Player is dead!");
+            // Ici tu peux faire game over ou respawn
+            
         }
     };
 
