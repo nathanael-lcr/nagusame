@@ -11,12 +11,13 @@ export default function createEnemy(
     k.area(),
     // k.body(),
     k.color(255, 0, 0),
+    k.layer("enemy"),
     "enemy",
   ]);
 
   const minStep = 100;
   const maxStep = 200;
-  const speed = 100;
+  const speed = 80;
   const waitTime = 1.5;
   const attackDistance = 20;
   const attackCooldown = 1.5; // secondes entre chaque attaque
@@ -42,10 +43,6 @@ export default function createEnemy(
     const angle = Math.random() * Math.PI * 2;
     const r = k.rand(minStep, maxStep);
     let newPos = center.add(k.vec2(Math.cos(angle), Math.sin(angle)).scale(r));
-
-    // Clamp x et y pour rester dans l'écran
-    newPos.x = Math.max(0, Math.min(k.width(), newPos.x));
-    newPos.y = Math.max(0, Math.min(k.height(), newPos.y));
 
     return newPos;
   }
@@ -84,6 +81,20 @@ export default function createEnemy(
     // Attaque si le joueur est proche
     if (distanceToPlayer <= attackDistance && isChasing && canAttack) {
       console.log("Enemy caught the player!");
+      const flash = k.add([
+        k.rect(k.width(), k.height()),
+        k.pos(0, 0),
+        k.fixed(),
+        k.color(255, 255, 255),
+        k.opacity(1),
+        k.z(1000),
+      ]);
+
+      k.tween(1, 0, 0.4, (o) => (flash.opacity = o), k.easings.linear);
+
+      k.wait(0.4, () => {
+        flash.destroy();
+      });
       player.takeDamage(10);
       // --- Mise à jour des carrés ---
       if (uiSquares.length > 0) {
@@ -208,7 +219,7 @@ export default function createEnemy(
   }
 
   const visionLength = 350;
-  const visionAngle = Math.PI / 2;
+  const visionAngle = Math.PI / 2.5;
   let currentAngle = 0;
   const rotationSpeed = 5;
 

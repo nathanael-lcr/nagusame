@@ -180,14 +180,14 @@ export default function createWindows(k, x, y,sizeX,sizeY,angle = 0) {
 }
 
 function triggerFlashbang(k) {
-    const flash = k.add([
-        k.rect(k.width(), k.height()),
-        k.pos(0, 0),
-        k.fixed(),
-        k.color(255, 255, 255),
-        k.opacity(1),
-        k.z(1000),
-    ]);
+  const flash = k.add([
+    k.rect(k.width(), k.height()),
+    k.pos(0, 0),
+    k.fixed(),
+    k.color(255, 255, 255),
+    k.opacity(1),
+    k.z(1000),
+  ]);
 
     let timer = 0;
     const duration = 0.4;
