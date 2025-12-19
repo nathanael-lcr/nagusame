@@ -1,4 +1,3 @@
-// main.js
 import kaplay from "kaplay";
 import createPlayer from "./player.js";
 import { createWall } from "./walls.js";
@@ -9,7 +8,6 @@ import createUI from "./UI.js";
 import createWindow from "./window.js";
 
 const k = kaplay();
-
 k.loadRoot("./");
 
 // Crée un layer pour l'UI
@@ -79,7 +77,7 @@ k.scene("level1", () => {
     createWindow(k,-500,-250);
     k.onUpdate(() => {
         k.setCamPos(player.pos);
-    })
+    });
 });
 
 k.go("level1");
