@@ -17,7 +17,7 @@ k.scene("game", () => {
     const enemy = createEnemy(k, uiSquares, 200, 400);
     // On ajoute la porte à une position spécifique
     const door = createDoor(k, 180, 180); 
-    createKey(k, 0, 0);
+    /*createKey(k, 0, 0);*/
     createWalls(k, -700, 250);
 
     k.onUpdate(() => {
