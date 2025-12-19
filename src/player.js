@@ -1,7 +1,7 @@
 // player.js
 
 export default function createPlayer(k, x = 120, y = 80) {
-    const SPEED = 200;
+
     let isTouchingKey = false;
     // La variable hasKey est supprimée d'ici, on va l'attacher à l'objet player
 
@@ -33,6 +33,7 @@ export default function createPlayer(k, x = 120, y = 80) {
         if (this.health <= 0) {
             console.log("Player is dead!");
             // Ici tu peux faire game over ou respawn
+            
         }
     };
 
