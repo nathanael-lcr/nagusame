@@ -17,8 +17,10 @@ export default function createUI(k, player) {
       k.rect(squareSize, squareSize),
       k.pos(startX + i * (squareSize + padding), startY),
       k.color(255, 0, 0),
-      k.fixed(), // UI fixe à l’écran
+      k.fixed(),
+      k.layer("ui"),
     ]);
+
     squares.push(square);
   }
 
