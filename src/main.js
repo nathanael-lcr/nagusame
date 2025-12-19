@@ -58,14 +58,15 @@ function createPulsatingText(k, textContent, size, yOffset = 0, color = k.color(
 
     return textObj;
 }
+
+// ÉLÉMENTS AJOUTÉS DU PREMIER CODE :
 // Crée un layer pour l'UI
 k.setLayers([
   "game",  // tout ce qui est jeu normal
   "ui",    // UI
 ], "game"); // couche par défaut = game
 
-
-// main.js - Shader avec pixels parfaitement carrés
+// Shader avec pixels parfaitement carrés
 k.loadShader(
   "playerLight",
   null,
@@ -178,7 +179,6 @@ k.scene("menu", () => {
         k.anchor("center")
     ]);
     
-    // ICI : Ajout de l'effet de pulsation pour le menu aussi
     createPulsatingText(
         k, 
         "Press SPACE to start", 

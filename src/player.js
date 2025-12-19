@@ -42,8 +42,10 @@ export default function createPlayer(k, x = 120, y = 80) {
 
     // sprint
     k.onKeyDown("shift", () => {
-        isSprinting = true;
-        mvmt = baseSpeed * 1.8;
+        if (player.stamina > 0) {
+            isSprinting = true;
+            mvmt = baseSpeed * 1.8;
+        }
     });
 
     k.onKeyRelease("shift", () => {
