@@ -21,7 +21,7 @@ function loadRubikBurned() {
         testElement.style.opacity = '0';
         testElement.textContent = '.';
         document.body.appendChild(testElement);
-        
+
         // Vérifier avec l'API FontFace
         if (document.fonts) {
             document.fonts.load('16px "Rubik Burned"').then(() => {
@@ -37,14 +37,36 @@ function loadRubikBurned() {
     });
 }
 
+function createPulsatingText(k, textContent, size, yOffset = 0, color = k.color(255, 255, 255)) {
+    const textObj = k.add([
+        k.text(textContent, {
+            size: size,
+            font: RUBIK_BURNED
+        }),
+        color,
+        k.pos(k.center().x, k.center().y + yOffset),
+        k.anchor("center"),
+        k.opacity(1),
+        k.scale(1)
+    ]);
+
+    textObj.onUpdate(() => {
+        const t = k.time();
+        textObj.opacity = k.wave(0.6, 1, t * 2);
+        textObj.scale = k.vec2(k.wave(0.98, 1.02, t * 3));
+    });
+
+    return textObj;
+}
+
+// ÉLÉMENTS AJOUTÉS DU PREMIER CODE :
 // Crée un layer pour l'UI
 k.setLayers([
   "game",  // tout ce qui est jeu normal
   "ui",    // UI
 ], "game"); // couche par défaut = game
 
-
-// main.js - Shader avec pixels parfaitement carrés
+// Shader avec pixels parfaitement carrés
 k.loadShader(
   "playerLight",
   null,
@@ -123,21 +145,53 @@ k.scene("death", () => {
         k.pos(k.center()),
         k.anchor("center")
     ]);
+    createPulsatingText(
+        k, 
+        "Press SPACE to restart",
+        32, 
+        100, 
+        k.color(255, 255, 255)
+    );
+
+    k.onKeyPress("space", () => {
+        k.go("level1");
+    });
+});
+
+k.scene("menu", () => {
+    k.setBackground(0, 0, 0);
     k.add([
-        k.text("Press SPACE to restart", {
-            size: 32,
+        k.text("慰め", {
+            size: 64,
             font: RUBIK_BURNED
         }),
-        k.color(255, 255, 255),
-        k.pos(k.center().x, k.center().y + 100),
+        k.color(255, 50, 50),
+        k.pos(k.center().x, k.center().y - 150),
+        k.anchor("center")
+    ]);
+    k.add([
+        k.text("Nagusame", {
+            size: 54,
+            font: "Michroma"
+        }),
+        k.color(255, 50, 50),
+        k.pos(k.center().x, k.center().y - 100),
         k.anchor("center")
     ]);
     
+    createPulsatingText(
+        k, 
+        "Press SPACE to start", 
+        32, 
+        100, 
+        k.color(255, 255, 255)
+    );
+
     k.onKeyPress("space", () => {
         k.go("level1");
     });
 });
 
 loadRubikBurned().then(() => {
-    k.go("death");
+    k.go("menu");
 });

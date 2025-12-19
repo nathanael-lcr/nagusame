@@ -44,7 +44,7 @@ export default function createPlayer(k, x = 120, y = 80) {
     k.onKeyDown("shift", () => {
         if (player.stamina > 0) {
             isSprinting = true;
-            mvmt = baseSpeed * 2;
+            mvmt = baseSpeed * 1.8;
         }
     });
 
