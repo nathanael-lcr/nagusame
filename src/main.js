@@ -17,7 +17,6 @@ k.scene("level1", () => {
     const uiSquares = createUI(k, player);
     const enemy = createEnemy(k, uiSquares, 0,-500);
     const door = createDoor(k, 180, 180); 
-    createKey(k, 0, 0);
     createWall(k, -700, 250,1800,200);
     createWall(k,-700,-500,200,800);
     createWindow(k,-500,-250);
