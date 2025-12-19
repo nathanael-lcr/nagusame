@@ -113,14 +113,28 @@ vec4 frag(vec2 pos, vec2 uv, vec4 color, sampler2D tex) {
   `
 );
 
+k.scene("bedroom", () => {
+    k.setBackground(50, 50, 50);
+    // NE PAS appeler createLighting ici
+    const player = createPlayer(k, 120, 80);
+    const key = createKey(k, 0, 0);
+    const uiSquares = createUI(k, player);
+    const door = createDoor(k, 180, 180);
+
+    k.onUpdate(() => {
+        k.setCamPos(player.pos);
+        if (door.isOpen){
+            k.go("level1");
+        }
+    });
+});
+
 k.scene("level1", () => {
     k.setBackground(50, 50, 50);
     const player = createPlayer(k, 120, 80);
-    const key = createKey(k, 0, 0);
-    const lighting = createLighting(k, player);
+    const lighting = createLighting(k, player); // Éclairage SEULEMENT ici
     const uiSquares = createUI(k, player);
-    const enemy = createEnemy(k, uiSquares, 700, -500);
-    const door = createDoor(k, 180, 180);
+    createEnemy(k, uiSquares, 700, -500);
     createWall(k, -700, 250, 1800, 300); //mur bas
     createWall(k, -700, -1200, 350, 1500);//mur gauche
     createWall(k, 600, -1700, 300, 1500); //mur droit
@@ -136,6 +150,7 @@ k.scene("level1", () => {
 
 k.scene("death", () => {
     k.setBackground(0, 0, 0);
+
     k.add([
         k.text("You got caught", {
             size: 64,
@@ -154,7 +169,7 @@ k.scene("death", () => {
     );
 
     k.onKeyPress("space", () => {
-        k.go("level1");
+        k.go("bedroom");
     });
 });
 
@@ -188,7 +203,7 @@ k.scene("menu", () => {
     );
 
     k.onKeyPress("space", () => {
-        k.go("level1");
+        k.go("bedroom");
     });
 });
 

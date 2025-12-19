@@ -4,33 +4,44 @@ export function createKey(k, x, y) {
         k.pos(x, y),
         k.anchor("center"),
         k.color(0, 255, 0),
-        k.area({scale : 2.25}),
+        k.area({ scale: 2.25 }),
         "key",
     ]);
 }
 
 export function createDoor(k, x, y) {
-    
+    let isOpen = false;
     const door = k.add([
-        k.rect(40, 80), 
+        k.rect(40, 80),
         k.pos(x, y),
-        k.color(255, 255, 0), 
+        k.color(255, 255, 0),
         k.area(),
-        k.body({ isStatic: true }), 
+        k.body({ isStatic: true }),
         "door",
+        {
+            isOpen: false,
+            openDoor() {
+                k.destroy(this);
+                console.log("Porte ouverte !");
+                this.isOpen = true;  // Mettre à jour la propriété
+            }
+        }
+
     ]);
 
-    
+
     function openDoor(doorObject) {
         k.destroy(doorObject);
         console.log("Porte ouverte !");
+        isOpen = true;
     }
 
     k.onCollide("player", "door", (player, door) => {
         if (player.hasKey) {
-            openDoor(door);
+            door.openDoor();
         } else {
             console.log("Cette porte est verrouillée. Il vous faut une clé.");
         }
     });
+    return door
 }
